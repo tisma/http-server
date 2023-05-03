@@ -1,0 +1,19 @@
+{
+    "/register": {
+        "POST": {
+            "$.response": {
+                "$.status": 201,
+                "$.body": {
+                    "name": "Mark Owen",
+                    "age": "25",
+                    "address": {
+                        "street": "123 Main St",
+                        "city": "New York",
+                        "state": "NY",
+                        "zip": "10001"
+                    }
+                }
+            }
+        }
+    }
+}
