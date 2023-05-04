@@ -42,3 +42,67 @@ impl DataFile for File {
         return file_path;
     }
 }
+
+pub struct Http<'a> {
+    pub path: &'a str,
+    pub method: &'a str,
+    pub request_body: String,
+}
+
+pub fn execute(http: Http, file: File) -> Value {
+    let file_path = file.get_path();
+
+    let file_string = fs::read_to_string(&file_path)
+        .expect(format!("\x1b[31m<< Unable to read file {file_path} >>\x1b[0m").as_str());
+
+    let mut data: Value = serde_json::from_str(&file_string).expect("Unable to parse");
+
+    let data_request_body = data[http.path][http.method]["$.request"].to_owned();
+
+    if data[http.path][http.method] == Null {
+        return json!({
+            "$.body": {
+                "error": "URI Path or HTTP Method Not found",
+                "path": http.path,
+                "method": http.method,
+            }
+        });
+    }
+
+    if check_http_request_body_is_different_from_data_request_body(
+        data_request_body.to_string(),
+        http.request_body.to_string(),
+    ) || check_data_request_body_is_null_and_http_request_body_is_not_empty(
+        data_request_body.to_string(),
+        http.request_body.to_string(),
+    ) {
+        let request: Value = serde_json::from_str(&http.request_body).unwrap_or_default();
+        return json!({
+            "&.body": {
+                "error": "Request body does not match",
+                "request": request,
+            }
+        });
+    }
+
+    let _ = &data[http.path][http.method]
+        .as_object_mut()
+        .unwrap()
+        .remove("$.request");
+
+    return data[http.path][http.method]["$.request"].to_owned();
+}
+
+fn check_http_request_body_is_different_from_data_request_body(
+    data_request_body: String,
+    http_request_body: String,
+) -> bool {
+    return data_request_body != http_request_body && data_request_body != "null";
+}
+
+fn check_data_request_body_is_null_and_http_request_body_is_not_empty(
+    data_request_body: String,
+    http_request_body: String,
+) -> bool {
+    return data_request_body == "null" && http_request_body != "";
+}
