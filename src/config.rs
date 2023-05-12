@@ -1,7 +1,7 @@
 use std::{collections::HashMap, fs};
 
 fn all() -> HashMap<String, String> {
-    let configs = fs::read_to_string(".env").unwrap();
+    let configs = fs::read_to_string(".env.example").unwrap();
 
     let parse: Vec<&str> = configs.split("\n").collect();
 
