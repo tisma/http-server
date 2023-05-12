@@ -28,7 +28,7 @@ impl DataFile for File {
         let file_path = loop {
             let arg = args.get(i).unwrap_or(&default);
 
-            if &[..3] == "-f=" {
+            if &arg[..3] == "-f=" {
                 break arg[3..].to_string();
             }
 
