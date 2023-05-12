@@ -106,3 +106,73 @@ fn check_data_request_body_is_null_and_http_request_body_is_not_empty(
 ) -> bool {
     return data_request_body == "null" && http_request_body != "";
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use pretty_assertions::assert_eq;
+
+    #[test]
+    fn test_read_file_and_return_mock_successfully() {
+        let ret = execute(
+            Http {
+                path: "/register",
+                method: "POST",
+                request_body: "".to_string(),
+            },
+            File {
+                file_path: "src/services/test_mock_data.json".to_string(),
+            },
+        );
+
+        assert_eq!(ret["$.body"]["name"], "John Doe");
+    }
+
+    #[test]
+    fn test_read_file_and_return_mock_not_found() {
+        let ret = execute(
+            Http {
+                path: "/register",
+                method: "GET",
+                request_body: "".to_string(),
+            },
+            File {
+                file_path: "src/services/test_mock_data.json".to_string(),
+            },
+        );
+
+        assert_eq!(ret["$.body"]["error"], "URI Path or HTTP Method Not found");
+    }
+
+    #[test]
+    fn test_read_file_from_args_and_return_mock_request_body_match() {
+        let ret = execute(
+            Http {
+                path: "/register",
+                method: "POST",
+                request_body: "".to_string(),
+            },
+            File {
+                file_path: "-f=src/services/test_mock_data.json".to_string(),
+            },
+        );
+
+        assert_eq!(ret["$.body"]["name"], "John Doe");
+    }
+
+    #[test]
+    fn test_read_file_from_default_file_and_return_mock_request_body_match() {
+        let ret = execute(
+            Http {
+                path: "/register",
+                method: "POST",
+                request_body: "".to_string(),
+            },
+            File {
+                file_path: "".to_string(),
+            },
+        );
+
+        assert_eq!(ret["$.body"]["name"], "John Doe");
+    }
+}
