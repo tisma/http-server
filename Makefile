@@ -1,6 +1,6 @@
 request:
 	@echo "Usage: make request"
-	sh requests.sh $(p) $(m)
+	sh request.sh $(p) $(m)
 
 test:
 	@echo "Usage: make test"
