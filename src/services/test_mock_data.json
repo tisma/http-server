@@ -4,13 +4,13 @@
             "$.response": {
                 "$.status": 201,
                 "$.body": {
-                    "name": "Mark Owen",
-                    "age": "25",
+                    "name": "John Doe",
+                    "age": "30",
                     "address": {
                         "street": "123 Main St",
-                        "city": "New York",
-                        "state": "NY",
-                        "zip": "10001"
+                        "city": "Anytown",
+                        "state": "CA",
+                        "zip": "12345"
                     }
                 }
             }
